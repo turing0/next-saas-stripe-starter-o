@@ -148,7 +148,7 @@ export const truncate = (str: string, length: number) => {
   return `${str.slice(0, length)}...`;
 };
 
-export function generateCustomId(): string {
+export function generateCustomId(userCount: number): string {
   const timestamp = Date.now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 5);
   return `${timestamp}_${randomPart}`;

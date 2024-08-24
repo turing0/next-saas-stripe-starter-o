@@ -24,8 +24,10 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
+      const userCount = await prisma.user.count();
+      console.log("userCount", userCount);
       console.log("default createUser", data);
-      const userId = generateCustomId();
+      const userId = generateCustomId(userCount);
       console.log("custom createUser", userId);
       return prisma.user.create({
         data: {
