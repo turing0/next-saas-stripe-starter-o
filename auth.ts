@@ -2,7 +2,7 @@ import authConfig from "@/auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { UserRole } from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
-
+import { Adapter} from "next-auth/adapters";
 import { prisma } from "@/lib/db";
 import { getUserById } from "@/lib/user";
 import { generateCustomId } from "./lib/utils";
@@ -20,7 +20,25 @@ export const {
   handlers: { GET, POST },
   auth,
 } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
+  adapter: {
+    ...PrismaAdapter(prisma),
+    createUser: async (data) => {
+      const userId = generateCustomId(); // 生成自定义ID
+      return prisma.user.create({
+        data: {
+          ...data,
+          id: userId,
+        },
+      });
+    },
+    // createUser: async (data: any) => {
+    //   console.log("default createUser", data);
+    //   data.id = generateCustomId();
+    //   console.log("custom createUser", data);
+    //   return prisma.user.create({ data });
+    // },
+  } as Adapter,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -63,15 +81,15 @@ export const {
       return token;
     },
   },
-  events: {
-    async createUser({ user }) {
-      const customId = generateCustomId();
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { id: customId },
-      });
-    },
-  },
+  // events: {
+  //   async createUser({ user }) {
+  //     const customId = generateCustomId();
+  //     await prisma.user.update({
+  //       where: { id: user.id },
+  //       data: { id: customId },
+  //     });
+  //   },
+  // },
   ...authConfig,
   // debug: process.env.NODE_ENV !== "production"
 });
