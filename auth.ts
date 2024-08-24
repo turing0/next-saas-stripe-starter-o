@@ -24,6 +24,8 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
+      console.log("new account");
+
       const user = await prisma.user.findUnique({
         where: {
           email: data.email,
