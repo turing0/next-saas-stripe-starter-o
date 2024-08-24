@@ -24,41 +24,16 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
-      // console.log("new account");
-      // const user = await prisma.user.findFirst({
-      //   where: {
-      //     email: data.email,
-      //     deleted: false,
-      //   },
-      //   select: {
-      //     name: true,
-      //     emailVerified: true,
-      //   },
-      // });
-      // if (user) {
-      //   // 如果用户再次登录 则把deleted改为false
-      //   return prisma.user.update({
-      //     where: {
-      //       email: data.email,
-      //     },
-      //     data: {
-      //       ...data,
-      //       deleted: false,
-      //     },
-      //   });
-      // }
-
-      const userCount = await prisma.user.count();
-      console.log("userCount", userCount);
+      // const userCount = await prisma.user.count();
+      // console.log("userCount", userCount);
       console.log("default createUser", data);
-
       // const userId = generateCustomId(userCount+1);
       // const userId = generateUserId(data.email);
 
       let userId: string;
       let user: any;
       let attempts = 0;
-      const maxAttempts = 6;
+      const maxAttempts = 3;
       while (!user && attempts < maxAttempts) {
         try {
           userId = generateUserId(data.email);
@@ -82,7 +57,14 @@ export const {
           }
         }
       }
-      return user;
+
+      console.log("All attempts failed, using cuid as userId");
+      return prisma.user.create({
+        data: {
+          ...data,
+          id: crypto.randomUUID(),
+        },
+      });
 
       console.log("custom userId", userId);
       return prisma.user.create({
