@@ -52,7 +52,6 @@ model Session {
 model User {
   id            String    @id
   // sequence      Int       @default(autoincrement())
-  sequenceTest  Int?
   name          String?
   email         String?   @unique
   emailVerified DateTime?
