@@ -24,8 +24,6 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
-      // const userCount = await prisma.user.count();
-      // console.log("userCount", userCount);
       console.log("default createUser", data);
       // const userId = generateCustomId(userCount+1);
       // const userId = generateUserId(data.email);
@@ -37,8 +35,6 @@ export const {
       while (!user && attempts < maxAttempts) {
         try {
           userId = generateUserId(data.email);
-          console.log("Attempting to create user with ID:", userId);
-    
           user = await prisma.user.create({
             data: {
               ...data,

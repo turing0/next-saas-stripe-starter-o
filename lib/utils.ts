@@ -164,10 +164,9 @@ export function generateCustomId(sequence: number): string {
   return `${timestamp}_${randomPart}`;
 }
 export function generateUserId(email: string, length: number=10, randomLength: number=4): string {
-  console.log("email", email);
   const randomNumber = Math.floor(Math.random() * (10 ** randomLength));
   const combined = email + randomNumber.toString().padStart(randomLength, '0');
-  console.log("combined", combined);
+  console.log("combined to hash", combined);
   const hash = crypto.createHash('sha256').update(combined).digest('hex');
   const bigIntHash = BigInt('0x' + hash);
   let uid = bigIntHash.toString();
