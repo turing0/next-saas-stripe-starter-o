@@ -5,6 +5,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 
 import { prisma } from "@/lib/db";
 import { getUserById } from "@/lib/user";
+import { generateCustomId } from "./lib/utils";
 
 // More info: https://authjs.dev/getting-started/typescript#module-augmentation
 declare module "next-auth" {
@@ -60,6 +61,15 @@ export const {
       token.role = dbUser.role;
 
       return token;
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      const customId = generateCustomId();
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { id: customId },
+      });
     },
   },
   ...authConfig,
