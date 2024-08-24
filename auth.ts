@@ -24,6 +24,28 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: data.email,
+        },
+        select: {
+          name: true,
+          emailVerified: true,
+        },
+      });
+      if (user) {
+        // 如果用户再次登录 则把deleted改为false
+        return prisma.user.update({
+          where: {
+            email: data.email,
+          },
+          data: {
+            ...data,
+            deleted: false,
+          },
+        });
+      }
+
       const userCount = await prisma.user.count();
       console.log("userCount", userCount);
       console.log("default createUser", data);

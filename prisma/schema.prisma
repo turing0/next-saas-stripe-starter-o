@@ -51,11 +51,11 @@ model Session {
 
 model User {
   id            String    @id
-  // sequence      Int       @default(autoincrement())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  deleted       Boolean   @default(false)
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
   role          UserRole  @default(USER)
