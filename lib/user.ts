@@ -5,7 +5,6 @@ export const getUserByEmail = async (email: string) => {
     const user = await prisma.user.findUnique({
       where: {
         email: email,
-        deleted: false,
       },
       select: {
         name: true,
@@ -24,7 +23,6 @@ export const getUserById = async (id: string) => {
     const user = await prisma.user.findUnique({ 
       where: { 
         id: id,
-        deleted: false,
       } 
     });
 

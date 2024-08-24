@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { clsx, type ClassValue } from "clsx";
 import ms from "ms";
 import { twMerge } from "tailwind-merge";
-
+import crypto from 'crypto';
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 
@@ -162,4 +162,23 @@ export function generateCustomId(sequence: number): string {
   const timestamp = Date.now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 5);
   return `${timestamp}_${randomPart}`;
+}
+export function generateUserId(email: string, length: number=10, randomLength: number=4): string {
+  console.log("email", email);
+  const randomNumber = Math.floor(Math.random() * (10 ** randomLength));
+  const combined = email + randomNumber.toString().padStart(randomLength, '0');
+  console.log("combined", combined);
+  const hash = crypto.createHash('sha256').update(combined).digest('hex');
+  const bigIntHash = BigInt('0x' + hash);
+  let uid = bigIntHash.toString();
+
+  if (uid.length > length) {
+    uid = uid.substring(0, length);
+  } else {
+    uid = uid.padStart(length, '0');
+  }
+
+  console.log('uid', uid)
+  return uid;
+
 }

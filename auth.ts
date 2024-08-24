@@ -5,7 +5,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 import { Adapter} from "next-auth/adapters";
 import { prisma } from "@/lib/db";
 import { getUserById } from "@/lib/user";
-import { generateCustomId } from "./lib/utils";
+import { generateCustomId, generateUserId } from "./lib/utils";
 
 // More info: https://authjs.dev/getting-started/typescript#module-augmentation
 declare module "next-auth" {
@@ -24,35 +24,67 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
-      console.log("new account");
-
-      const user = await prisma.user.findUnique({
-        where: {
-          email: data.email,
-        },
-        select: {
-          name: true,
-          emailVerified: true,
-        },
-      });
-      if (user) {
-        // 如果用户再次登录 则把deleted改为false
-        return prisma.user.update({
-          where: {
-            email: data.email,
-          },
-          data: {
-            ...data,
-            deleted: false,
-          },
-        });
-      }
+      // console.log("new account");
+      // const user = await prisma.user.findFirst({
+      //   where: {
+      //     email: data.email,
+      //     deleted: false,
+      //   },
+      //   select: {
+      //     name: true,
+      //     emailVerified: true,
+      //   },
+      // });
+      // if (user) {
+      //   // 如果用户再次登录 则把deleted改为false
+      //   return prisma.user.update({
+      //     where: {
+      //       email: data.email,
+      //     },
+      //     data: {
+      //       ...data,
+      //       deleted: false,
+      //     },
+      //   });
+      // }
 
       const userCount = await prisma.user.count();
       console.log("userCount", userCount);
       console.log("default createUser", data);
-      const userId = generateCustomId(userCount+1);
-      console.log("custom createUser", userId);
+
+      // const userId = generateCustomId(userCount+1);
+      // const userId = generateUserId(data.email);
+
+      let userId: string;
+      let user: any;
+      let attempts = 0;
+      const maxAttempts = 6;
+      while (!user && attempts < maxAttempts) {
+        try {
+          userId = generateUserId(data.email);
+          console.log("Attempting to create user with ID:", userId);
+    
+          user = await prisma.user.create({
+            data: {
+              ...data,
+              id: userId,
+            },
+          });
+    
+          console.log("User created successfully:", user);
+          return user;
+        } catch (error) {
+          if ((error as any).code === 'P2002') {
+            console.log("Duplicate ID detected, retrying...");
+            attempts++;
+          } else {
+            throw error; // 如果是其他错误，直接抛出
+          }
+        }
+      }
+      return user;
+
+      console.log("custom userId", userId);
       return prisma.user.create({
         data: {
           ...data,
