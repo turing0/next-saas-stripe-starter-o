@@ -49,7 +49,7 @@ export const {
             console.log("Duplicate ID detected, retrying...");
             attempts++;
           } else {
-            throw error; // 如果是其他错误，直接抛出
+            throw error;
           }
         }
       }
@@ -61,21 +61,7 @@ export const {
           id: crypto.randomUUID(),
         },
       });
-
-      console.log("custom userId", userId);
-      return prisma.user.create({
-        data: {
-          ...data,
-          id: userId,
-        },
-      });
     },
-    // createUser: async (data: any) => {
-    //   console.log("default createUser", data);
-    //   data.id = generateCustomId();
-    //   console.log("custom createUser", data);
-    //   return prisma.user.create({ data });
-    // },
   } as Adapter,
   session: { strategy: "jwt" },
   pages: {
