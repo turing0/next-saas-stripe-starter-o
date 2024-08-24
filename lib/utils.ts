@@ -150,13 +150,14 @@ export const truncate = (str: string, length: number) => {
 
 export function generateCustomId(sequence: number): string {
   console.log("sequence", sequence);
-  console.log("PERMUTATION_KEY", env.PERMUTATION_KEY);
-  const permutationKey = parseInt(env.PERMUTATION_KEY, 10);
-  console.log("permutationKey", permutationKey);
-
-  const uidNumber = (sequence * permutationKey) % 100000000
-  console.log('uid', uidNumber.toString().padStart(8, '0'))
-  // return uidNumber.toString().padStart(8, '0');
+  const permutationKey = env.PERMUTATION_KEY;
+  const intKey = parseInt(permutationKey, 10);
+  const c = parseInt(permutationKey[2], 10);
+  const uidNumber = (sequence * intKey) % 100000000
+  const uid2 = uidNumber.toString().padStart(8, '0')
+  const uid = uid2.slice(-c) + uid2.slice(0, -c);
+  console.log('uid', uid)
+  return uid;
 
   const timestamp = Date.now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 5);
