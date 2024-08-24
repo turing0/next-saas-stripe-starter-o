@@ -151,5 +151,5 @@ export const truncate = (str: string, length: number) => {
 export function generateCustomId(): string {
   const timestamp = Date.now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 5);
-  return `user_${timestamp}_${randomPart}`;
+  return `${timestamp}_${randomPart}`;
 }
