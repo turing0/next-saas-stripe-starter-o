@@ -24,7 +24,9 @@ export const {
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (data) => {
-      const userId = generateCustomId(); // 生成自定义ID
+      console.log("default createUser", data);
+      const userId = generateCustomId();
+      console.log("custom createUser", userId);
       return prisma.user.create({
         data: {
           ...data,
