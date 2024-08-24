@@ -153,7 +153,8 @@ export function generateCustomId(sequence: number): string {
 
   const permutationKey = parseInt(env.PERMUTATION_KEY, 10);
   const uidNumber = (sequence * permutationKey) % 100000000
-  return uidNumber.toString().padStart(8, '0');;
+  console.log(uidNumber.toString().padStart(8, '0'))
+  // return uidNumber.toString().padStart(8, '0');
 
   const timestamp = Date.now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 5);
