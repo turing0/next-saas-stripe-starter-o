@@ -150,6 +150,7 @@ export const truncate = (str: string, length: number) => {
 
 export function generateCustomId(sequence: number): string {
   console.log("sequence", sequence);
+  console.log("PERMUTATION_KEY", env.PERMUTATION_KEY);
   const permutationKey = parseInt(env.PERMUTATION_KEY, 10);
   console.log("permutationKey", permutationKey);
 
